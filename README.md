@@ -27,7 +27,7 @@
 # Built With
 - Flutter
 - Dart
-- Material Design
+- Material Design.
 
 # Acknowledgements
 - Educational content created. 
