@@ -1,0 +1,287 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+void main() {
+  runApp(FlashcardApp());
+}
+
+class Flashcard {
+  String question;
+  String answer;
+
+  Flashcard({required this.question, required this.answer});
+}
+
+class FlashcardApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flashcard Quiz App',
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        brightness: Brightness.light,
+      ),
+      home: FlashcardPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class FlashcardPage extends StatefulWidget {
+  @override
+  _FlashcardPageState createState() => _FlashcardPageState();
+}
+
+class _FlashcardPageState extends State<FlashcardPage> {
+  List<Flashcard> flashcards = [
+    Flashcard(
+      question: "What is flutter?",
+      answer: "An open-source UI toolkit by Google.",
+    ),
+    Flashcard(question: "Which Language does Flutter use?", answer: "Dart."),
+    Flashcard(
+      question: "What is a Widget in Flutter ?",
+      answer: "The basic building block of UI.",
+    ),
+    Flashcard(
+      question: "What does 'hot reload do'?",
+      answer: "It allows you to quickly rebuild UI during development .",
+    ),
+    Flashcard(
+      question: "What is the root widget in most Flutter apps?",
+      answer: "MaterialApp or CupertinoApp.",
+    ),
+    Flashcard(
+      question: "What is State in Flutter?",
+      answer: "Information that can change over time or when user interacts.",
+    ),
+    Flashcard(
+      question: "What is setState() used for?",
+      answer: "To update the UI in StatefulWidgets.",
+    ),
+    Flashcard(
+      question: "What is the difference between Stateless and StatefulWidget?",
+      answer: "Stateless has no internal state, Stateful can change over time.",
+    ),
+    Flashcard(
+      question: "What is pubspec.yaml?",
+      answer: "A file to manage dependencies and assets.",
+    ),
+    Flashcard(
+      question: "How do you add an image asset in Flutter?",
+      answer: "Place it in assets folder and declare it in pubspec.yaml.",
+    ),
+    Flashcard(
+      question: "What does Navigator.push() do?",
+      answer: "Navigates to a new screen.",
+    ),
+  ];
+
+  int currentIndex = 0;
+  bool showAnswer = false;
+
+  void _nextCard() {
+    setState(() {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        showAnswer = false;
+      }
+    });
+  }
+
+  void _prevCard() {
+    setState(() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showAnswer = false;
+      }
+    });
+  }
+
+  void _toggleAnswer() {
+    setState(() {
+      showAnswer = !showAnswer;
+    });
+  }
+
+  void _addFlashcard() {
+    String question = "";
+    String answer = "";
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Add Flashcard"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              decoration: InputDecoration(labelText: 'Question'),
+              onChanged: (value) => question = value,
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Answer'),
+              onChanged: (value) => answer = value,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (question.isNotEmpty && answer.isNotEmpty) {
+                setState(() {
+                  flashcards.add(Flashcard(question: question, answer: answer));
+                });
+              }
+              Navigator.pop(context);
+            },
+            child: Text("Add"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _editFlashcard(int index) {
+    if (flashcards.isEmpty) return;
+    String question = flashcards[index].question;
+    String answer = flashcards[index].answer;
+
+    final questionController = TextEditingController(text: question);
+    final answerController = TextEditingController(text: answer);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Edit Flashcard"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: questionController,
+              decoration: InputDecoration(labelText: 'Question'),
+              onChanged: (value) => question = value,
+            ),
+            TextField(
+              controller: answerController,
+              decoration: InputDecoration(labelText: 'Answer'),
+              onChanged: (value) => answer = value,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                flashcards[index] = Flashcard(
+                  question: question,
+                  answer: answer,
+                );
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Save"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteFlashcard(int index) {
+    if (flashcards.isEmpty) return;
+    setState(() {
+      flashcards.removeAt(index);
+      if (currentIndex >= flashcards.length) {
+        currentIndex = flashcards.length - 1;
+      }
+      showAnswer = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentCard = flashcards.isNotEmpty ? flashcards[currentIndex] : null;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Flashcard Quiz App"),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: _addFlashcard,
+            color: Colors.indigo,
+            tooltip: "Add",
+            icon: Icon(Icons.add),
+          ),
+          IconButton(
+            onPressed: flashcards.isNotEmpty
+                ? () => _editFlashcard(currentIndex)
+                : null,
+            color: Colors.purple,
+            tooltip: "Edit",
+            icon: Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: flashcards.isNotEmpty
+                ? () => _deleteFlashcard(currentIndex)
+                : null,
+            color: Colors.red,
+            tooltip: "Delete",
+            icon: Icon(Icons.delete),
+          ),
+        ],
+      ),
+      body: flashcards.isEmpty
+          ? Center(child: Text("No flashcards. Tap + to add some."))
+          : Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Card(
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      height: 220,
+                      padding: EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          showAnswer
+                              ? currentCard!.answer
+                              : currentCard!.question,
+                          style: TextStyle(fontSize: 20),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _prevCard,
+                        icon: Icon(Icons.arrow_back),
+                        label: Text("Previous"),
+                      ),
+                      ElevatedButton(
+                        onPressed: _toggleAnswer,
+                        child: Text(showAnswer ? "Hide Answer" : "Show Answer"),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: _nextCard,
+                        icon: Icon(Icons.arrow_forward),
+                        label: Text("Next"),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "Card ${currentIndex + 1} of ${flashcards.length}",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
