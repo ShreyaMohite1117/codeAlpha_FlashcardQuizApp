@@ -4,16 +4,16 @@
 - Users can add, edit, and delete flashcards for a personalized learning experience.
 
 # Features
-- Display flashcards with a question --> answer
-- Toggle answer visibility with "Show Answer"
-- Navigate between flashcards using "Next" and "Previous"
-- Add new flashcards
-- Edit existing ones
-- Delete flashcards easily
-- Clean, responsive, and mobile-friendly UI
-- Local state management (can be extended to Firebase or SQLite)
-- Beautiful card flip animations
-- Light theme support
+- Display flashcards with a question --> answer.
+- Toggle answer visibility with "Show Answer".
+- Navigate between flashcards using "Next" and "Previous".
+- Add new flashcards.
+- Edit existing ones.
+- Delete flashcards easily.
+- Clean, responsive, and mobile-friendly UI.
+- Local state management (can be extended to Firebase or SQLite).
+- Beautiful card flip animations.
+- Light theme support.
 
 
 # Prerequisites
